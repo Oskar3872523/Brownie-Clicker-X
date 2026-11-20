@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Brownie Clicker</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&display=swap">
+<style>
+:root{--g:#f5c542;--t:#f3e3d0;--m:#a98c75;box-sizing:border-box}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#120a07;color:var(--t);font-family:Merriweather,Georgia,serif;color-scheme:dark;overflow:hidden}
+button{font:inherit;color:inherit}
+#app{display:grid;grid-template-columns:minmax(300px,34%) 1fr minmax(300px,30%);height:100vh;height:100dvh;padding-top:env(safe-area-inset-top,0px)}
+.col{overflow:auto;position:relative;min-height:0}
+#cL{background:radial-gradient(ellipse at 50% 38%,#5a3220 0,#341a10 45%,#1a0d08 100%);border-right:3px solid #0c0605;box-shadow:inset -8px 0 18px #0009;display:flex;flex-direction:column;align-items:center;padding:0 0 14px}
+#cL:after{content:"";position:absolute;left:0;right:0;bottom:0;height:90px;background:linear-gradient(#0000,#2b150b 60%,#3b1d0d);pointer-events:none;border-top:2px solid #5a301a33}
+#cL>*{position:relative;z-index:1}
+#bakery{width:100%;text-align:center;padding:8px;font-weight:900;font-size:16px;background:linear-gradient(#4a2a1a,#2a1409);border-bottom:2px solid #0c0605;box-shadow:0 2px 8px #0008;color:#ffe9c9;text-shadow:0 2px 3px #000}
+#bankbox{margin:10px 0 0;width:88%;text-align:center;background:#0009;border:1px solid #6d4025;border-radius:6px;padding:8px 6px;box-shadow:0 0 14px #000a inset}
+#bank{font-size:28px;font-weight:900;color:#fff;text-shadow:0 2px 0 #000,0 0 14px #f5c54266;line-height:1.15}
+#cps{font-size:12px;color:#e6cbb0;margin-top:2px}
+#buffs{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;min-height:26px;margin:6px 8px 0}
+.buff{background:linear-gradient(#6b4300,#3d2500);border:1px solid var(--g);border-radius:6px;padding:2px 10px;font-size:12px}
+#stage{position:relative;display:flex;justify-content:center;align-items:center;width:100%;flex:1;min-height:300px;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+#stage:before{content:"";position:absolute;width:420px;height:420px;max-width:120%;background:repeating-conic-gradient(#f5c54226 0 10deg,#0000 10deg 30deg);border-radius:50%;-webkit-mask:radial-gradient(circle,#000 20%,#0000 68%);mask:radial-gradient(circle,#000 20%,#0000 68%);animation:spin 60s linear infinite;pointer-events:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+#brownie{position:relative;width:290px;height:270px;border:0;padding:0;background:none;cursor:pointer;filter:drop-shadow(0 10px 18px #000a) drop-shadow(0 0 26px #f5c54233);animation:float 4s ease-in-out infinite;transition:transform .06s}
+#brownie:hover{filter:brightness(1.1)}
+#brownie:active{transform:scale(.94);animation:none}
+@keyframes float{50%{transform:translateY(-6px) rotate(1deg)}}
+.pop{position:absolute;pointer-events:none;font-weight:900;color:#fff;text-shadow:0 2px 3px #000,0 0 8px #000;animation:up 1s forwards;z-index:5;white-space:nowrap}
+@keyframes up{to{transform:translateY(-90px);opacity:0}}
+.crumb{position:absolute;pointer-events:none;width:8px;height:8px;border-radius:2px;background:#6b3a22;animation:fall .8s forwards;z-index:4}
+@keyframes fall{to{transform:translate(var(--x),var(--y)) rotate(200deg);opacity:0}}
+#gold{position:fixed;z-index:50;font-size:64px;border:0;background:none;cursor:pointer;display:none;filter:drop-shadow(0 0 14px gold);animation:pulse 1s infinite}
+@keyframes pulse{50%{transform:scale(1.18)}}
+#ctl{text-align:center;padding:0 8px}
+.btn{background:linear-gradient(#ffe08a,#c8921a);color:#2a1710;font-weight:900;border:1px solid #6b4300;border-radius:5px;padding:7px 11px;cursor:pointer;margin:3px 2px;font-size:13px;box-shadow:0 2px 0 #4a2d00}
+.btn:active{transform:translateY(1px)}
+.btn.s{background:linear-gradient(#5a3624,#3a2014);color:var(--t);border:1px solid #7a4a2c;box-shadow:0 2px 0 #0008;font-weight:700}
+#sv{color:#d9bda3;font-size:11px;margin-top:4px;text-shadow:0 1px 1px #000}
+textarea{width:100%;height:56px;background:#1b0f0a;color:var(--t);border:1px solid #5a3624;border-radius:6px;font-size:11px}
+#cX{background:linear-gradient(#2a1810,#1a0e09);padding:0 0 12px}
+#menu{display:flex;position:sticky;top:0;z-index:3;background:linear-gradient(#5a3624,#2b170d);border-bottom:2px solid #0c0605}
+#menu span{flex:1;text-align:center;padding:9px 2px;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;border-right:1px solid #0c0605;color:#f0d7bb;text-shadow:0 1px 2px #000}
+#news{margin:8px;padding:7px 10px;background:#0a0503;border:1px solid #4a2a1a;border-radius:4px;font-style:italic;font-size:12px;color:#e8d3bb;min-height:34px;box-shadow:inset 0 0 10px #000}
+.box{margin:8px;background:#00000040;border:1px solid #4a2a1a;border-radius:6px;padding:10px}
+h2{margin:0 0 8px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--g);font-weight:900;border-bottom:1px solid #4a2a1a;padding-bottom:5px}
+#ach{display:flex;flex-wrap:wrap;gap:4px}
+.a{width:36px;height:36px;border-radius:5px;background:#120a06;display:flex;align-items:center;justify-content:center;font-size:19px;opacity:.28;border:1px solid #3b2218;filter:grayscale(1)}
+.a.on{opacity:1;filter:none;border-color:var(--g);background:linear-gradient(#4a2a1a,#2a1409)}
+#stats div{display:flex;justify-content:space-between;padding:3px 0;font-size:12px;border-bottom:1px dotted #4a2a1a}
+#stats span:last-child{color:#ffe9c9;font-weight:700}
+#cS{background:linear-gradient(#2b1409,#150a06);border-left:3px solid #0c0605;box-shadow:inset 8px 0 18px #0009}
+#storehd{position:sticky;top:0;z-index:3;text-align:center;padding:8px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;font-size:13px;color:#ffe9c9;background:linear-gradient(#6b2f1c,#3a160c);border-bottom:2px solid #0c0605;text-shadow:0 2px 2px #000}
+#upbox{background:#0006;border-bottom:2px solid #0c0605;padding:8px;min-height:62px;box-shadow:inset 0 0 12px #000}
+#ups{display:flex;flex-wrap:wrap;gap:3px}
+.up{width:46px;height:46px;border-radius:4px;border:2px solid #9a6a3a;background:radial-gradient(circle at 35% 30%,#6b3a22,#2a1208);font-size:24px;cursor:pointer;padding:0;box-shadow:0 2px 3px #000a;transition:transform .08s}
+.up:hover{border-color:var(--g);transform:scale(1.08)}
+.up.no{filter:grayscale(.7) brightness(.65);border-color:#4a2a1a}
+#shop{padding:0}
+.row{display:flex;align-items:center;gap:8px;width:100%;text-align:left;background:linear-gradient(90deg,#3a1d12,#24120a);border:0;border-bottom:1px solid #0c0605;border-top:1px solid #ffffff12;padding:7px 10px;cursor:pointer;min-height:62px;position:relative}
+.row:hover{background:linear-gradient(90deg,#5a2f1c,#33190e)}
+.row.no{opacity:1}.row.no .n b{color:#bba58f}.row.no .c{color:#ff6b5a}
+.row .i{font-size:30px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#6b3a22,#1f0e07);border:2px solid #7a4a2c;border-radius:6px;flex:none}
+.row .n{flex:1;min-width:0}.row .n b{display:block;font-size:16px;color:#fff;text-shadow:0 2px 2px #000}
+.row small{color:#bda58e;font-size:10px;display:block}
+.row .c{color:#7dff7d;font-weight:900;font-size:13px;text-shadow:0 1px 1px #000}
+.row .o{font-size:34px;font-weight:900;color:#ffffff40;min-width:34px;text-align:right}
+#toast{position:fixed;left:50%;bottom:calc(60px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:linear-gradient(#ffe08a,#c8921a);color:#2a1710;padding:8px 16px;border-radius:6px;font-weight:900;opacity:0;transition:opacity .3s;z-index:99;pointer-events:none;max-width:90vw;text-align:center;border:1px solid #6b4300;font-size:13px}
+#tip{position:fixed;z-index:60;background:linear-gradient(#2a1409,#120a06);border:2px solid #9a6a3a;border-radius:6px;padding:8px 12px;font-size:12px;pointer-events:none;display:none;max-width:250px;box-shadow:0 6px 16px #000c}
+.tabs{display:none;position:fixed;left:0;right:0;bottom:0;z-index:40;background:#0c0605;border-top:2px solid #5a3624;padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabs button{flex:1;padding:12px 4px;background:linear-gradient(#3a2014,#1f0e07);border:0;border-right:1px solid #0c0605;font-weight:900;font-size:13px}
+.tabs button.on{background:linear-gradient(#ffe08a,#c8921a);color:#2a1710}
+@media(max-width:900px){#app{grid-template-columns:1fr;display:block;height:100dvh}.col{height:calc(100dvh - 50px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}.tabs{display:flex}.col[data-t]{display:none}.col[data-t].on{display:block}#cL.on{display:flex}#stage{min-height:300px}#brownie{width:250px;height:235px}}
+#upbox{max-height:230px;overflow:auto}
+#band{width:92%;max-height:200px;overflow:auto;margin:4px 0 8px;border:1px solid #4a2a1a;border-radius:6px;background:#0b0604aa}
+.brow{display:flex;align-items:center;min-height:30px;padding:2px 6px;border-bottom:1px solid #2a1409;background:linear-gradient(90deg,#3a1d12aa,#1a0d08aa)}
+.brow .e{font-size:20px;margin-left:-7px;filter:drop-shadow(0 2px 1px #000)}.brow .e:first-child{margin-left:0}
+.brow b{margin-left:auto;padding-left:8px;color:#ffffff88;font-size:13px}
+#lb,#op{position:fixed;inset:0;background:#000c;z-index:90;display:flex;align-items:center;justify-content:center;padding:10px}
+#lbc,#opc{background:linear-gradient(#3a2014,#1a0d08);border:2px solid #9a6a3a;border-radius:10px;padding:14px;width:min(520px,100%);max-height:90vh;overflow:auto}
+#lbt{display:flex;gap:4px;margin:8px 0}#lbt .btn{flex:1}.btn.on{box-shadow:0 0 0 2px #fff4}
+.lr{display:flex;gap:8px;padding:6px 8px;border-bottom:1px dotted #5a3624;font-size:14px}.lr.me{background:#f5c54222;font-weight:700}.lr span:nth-child(2){flex:1}.lr span:last-child{color:var(--g)}
+</style></head><body>
+<div id="app">
+ <div class="col on" data-t="l" id="cL">
+  <div id="bakery">🍫 Brownie Clicker – Deine Bäckerei</div>
+  <div id="bankbox"><div id="bank">0</div><div id="cps"></div></div>
+  <div id="buffs"></div>
+  <div id="stage"><button id="brownie" aria-label="Brownie"><svg viewBox="0 0 300 280" width="100%" height="100%" style="pointer-events:none;overflow:visible"><defs>
+<linearGradient id="bt" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7a4020"/><stop offset=".55" stop-color="#4a2210"/><stop offset="1" stop-color="#2e1409"/></linearGradient>
+<linearGradient id="bs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a2a14"/><stop offset=".5" stop-color="#3a1809"/><stop offset="1" stop-color="#220e05"/></linearGradient>
+<radialGradient id="bh" cx=".3" cy=".25" r=".5"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+<radialGradient id="bw" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#e0b878"/><stop offset="1" stop-color="#9a6a34"/></radialGradient></defs>
+<ellipse cx="152" cy="244" rx="135" ry="22" fill="#000" opacity=".45"/>
+<path d="M40 168Q160 198 277 160L273 216Q160 254 44 222Z" fill="url(#bs)" stroke="#1a0a04" stroke-width="3" stroke-linejoin="round"/>
+<path d="M46 186Q160 214 272 178M46 202Q160 230 272 194" fill="none" stroke="#7a4a2a" stroke-width="2" opacity=".45"/>
+<g fill="#160803" opacity=".7"><ellipse cx="80" cy="200" rx="5" ry="3"/><ellipse cx="130" cy="214" rx="4" ry="2.5"/><ellipse cx="190" cy="206" rx="6" ry="3"/><ellipse cx="240" cy="190" rx="4" ry="2.5"/><ellipse cx="160" cy="232" rx="5" ry="2.5"/></g>
+<path d="M52 114Q152 70 262 100L277 160Q160 198 40 168Z" fill="url(#bt)" stroke="#1a0a04" stroke-width="3" stroke-linejoin="round"/>
+<path d="M60 124Q90 112 130 118M170 100Q210 96 246 108M120 150L150 128L190 140M196 170L222 140L258 150M70 150L96 142" fill="none" stroke="#b27c4c" stroke-width="2.2" stroke-linecap="round" opacity=".75"/>
+<g stroke="#6a4020" stroke-width="2"><path d="M96 132q10-14 28-8q8 10-4 18q-18 4-24-10z" fill="url(#bw)"/><path d="M196 122q12-12 28-4q6 12-6 18q-16 2-22-14z" fill="url(#bw)"/><path d="M142 154q10-12 26-6q8 10-2 18q-18 4-24-12z" fill="url(#bw)"/><path d="M226 150q8-10 22-4q4 10-6 14q-12 2-16-10z" fill="url(#bw)"/></g>
+<g fill="#f6e9d6" opacity=".55"><circle cx="76" cy="136" r="1.8"/><circle cx="170" cy="112" r="1.8"/><circle cx="214" cy="160" r="1.8"/><circle cx="108" cy="162" r="1.8"/><circle cx="252" cy="126" r="1.8"/><circle cx="150" cy="130" r="1.4"/><circle cx="64" cy="152" r="1.4"/><circle cx="236" cy="108" r="1.4"/></g>
+<ellipse cx="108" cy="108" rx="62" ry="22" fill="url(#bh)" transform="rotate(-8 108 108)"/>
+</svg></button></div>
+  <div id="band"></div>
+  <div id="ctl" style="margin-bottom:70px"><button class="btn" id="lbb">🏆 Ranglisten</button><button class="btn s" id="opb">⚙ Optionen</button></div>
+ </div>
+ <div class="col" data-t="x" id="cX">
+  <div id="menu"><span>Optionen</span><span>Statistiken</span><span>Info</span><span>Prestige</span></div>
+  <div id="news"></div>
+  <div class="box"><h2>Prestige</h2><div id="pre" style="font-size:13px;margin-bottom:8px;line-height:1.6"></div><button class="btn" id="asc">✨ Aufsteigen</button></div>
+  <div class="box"><h2>Statistiken</h2><div id="stats"></div></div>
+  <div class="box"><h2>Erfolge <span id="ac" style="color:var(--m)"></span></h2><div id="ach"></div></div>
+  <div class="box"><button class="btn s" id="reset">Spielstand löschen</button></div>
+ </div>
+ <div class="col on" data-t="s" id="cS">
+  <div id="storehd">Shop</div>
+  <div id="upbox"><div id="ups"></div></div>
+  <div id="shop"></div>
+ </div>
+</div>
+<div class="tabs"><button data-g="l" class="on">🍫 Brownie</button><button data-g="s">🛒 Shop</button><button data-g="x">📊 Mehr</button></div>
+<div id="lb" style="display:none"><div id="lbc"><div style="display:flex;justify-content:space-between;align-items:center"><h2 style="border:0;margin:0">🏆 Ranglisten</h2><button class="btn s" id="lbx">✕</button></div><div id="lbt"><button class="btn on" data-k="chips">Prestige</button><button class="btn s" data-k="pt">Spielzeit</button><button class="btn s" data-k="ups">Upgrades</button></div><div id="lbl"></div><div style="margin-top:8px"><button class="btn s" id="lbn">✏️ Name ändern</button></div></div></div><div id="op" style="display:none"><div id="opc"><div style="display:flex;justify-content:space-between;align-items:center"><h2 style="border:0;margin:0">⚙ Optionen</h2><button class="btn s" id="opx">✕</button></div>
+<h2 style="margin-top:12px">Spielstand</h2><button class="btn" id="save">💾 Speichern</button><button class="btn s" id="exp">⬆ Export</button><button class="btn s" id="imp">⬇ Import</button>
+<div id="sv" style="color:#d9bda3;font-size:11px;margin:4px 0"></div><textarea id="ta" style="display:none" placeholder="Export-Code hier einfügen und erneut auf Import tippen"></textarea>
+<h2 style="margin-top:12px">Sound</h2><button class="btn s" id="mute">🔊</button><button class="btn s" id="mus">🎵 Musik: aus</button>
+<div style="margin-top:6px;font-size:13px">Lautstärke <input type="range" id="vol" min="0" max="100" value="100" style="width:60%;vertical-align:middle"></div></div></div>
+<button id="gold" aria-label="Goldener Brownie">🌟</button><div id="toast"></div><div id="tip"></div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id),KEY="brownieclicker_v1";
+const B=[["🥄","Rührlöffel",15,.1],["🍳","Backblech",100,1],["👩‍🍳","Konditor",1100,8],["🔥","Backofen",12e3,47],["🏭","Schoko-Fabrik",13e4,260],["🌴","Kakao-Plantage",14e5,1400],["⛏️","Brownie-Mine",2e7,7800],["⏳","Zeitmaschine",33e7,44e3],["🌀","Portal",51e8,26e4],["⚗️","Alchemie-Labor",75e9,16e5],["🧪","Antimaterie-Ofen",1e12,1e7],["🌈","Prisma-Küche",14e12,65e6],["🎲","Zufalls-Bäckerei",2e14,43e7],["🌌","Idle-Universum",33e14,29e8],["🪐","Brownie-Planet",51e15,21e9],["🌟","Galaxie-Ofen",75e16,15e10]];
+const TH=[1,5,10,25,50,75,100,125,150,175,200,250,300,350,400,500];
+const U=[];
+B.forEach((b,i)=>TH.forEach((t,k)=>U.push({id:"b"+i+"_"+k,ic:b[0],nm:b[1]+" Stufe "+(k+1),ds:b[1]+" produzieren doppelt so viel",cost:b[2]*10*Math.pow(4.2,k),ok:s=>s.own[i]>=t,b:i})));
+for(let k=0;k<20;k++){const c=100*Math.pow(10,k);U.push({id:"c"+k,ic:"👆",nm:"Starke Finger "+(k+1),ds:"Klicks sind doppelt so stark",cost:c,ok:s=>s.tot>=c/4,click:1})}
+for(let k=0;k<40;k++){const c=1e3*Math.pow(6.5,k);U.push({id:"g"+k,ic:"🍬",nm:"Zuckerguss "+(k+1),ds:"+5% Gesamtproduktion",cost:c,ok:s=>s.tot>=c/4,glob:1})}
+const AC=[];
+[1,1e3,1e6,1e9,1e12,1e15,1e18,1e21].forEach(v=>AC.push(["🍫","Backe "+f(v)+" Brownies",s=>s.all>=v]));
+[1,100,1e3,1e4,1e5].forEach(v=>AC.push(["👆",v+" Klicks",s=>s.clicks>=v]));
+B.forEach((b,i)=>[1,50,100].forEach(v=>AC.push([b[0],v+"× "+b[1],s=>s.own[i]>=v])));
+[1,7,27,77].forEach(v=>AC.push(["🌟",v+" goldene Brownies",s=>s.gc>=v]));
+[1,10,100].forEach(v=>AC.push(["✨",v+" Prestige-Chips",s=>s.chips>=v]));
+[10,50,100].forEach(v=>AC.push(["📈",f(v*1e3)+" Brownies/s".replace("1","1"),s=>cps(s)>=v*1e3]));
+function f(n){if(n<1e6)return n>=1e3?n.toLocaleString("de-DE",{maximumFractionDigits:0}):(n<10?n.toFixed(1):Math.floor(n)).toString().replace(".",",");const N=["Mio","Mrd","Bio","Brd","Trio","Trd","Quad","Quint","Sext","Sept","Okt","Non","Dez"];let e=Math.min(Math.floor(Math.log10(n)/3)-2,N.length-1);return(n/Math.pow(1e3,e+2)).toFixed(2).replace(".",",")+" "+N[e]}
+const fresh=()=>({b:0,tot:0,all:0,clicks:0,own:B.map(_=>0),up:{},ach:{},chips:0,asc:0,gc:0,t:Date.now(),t0:Date.now(),asc0:Date.now(),mute:0,ev:0,pt:0,name:""});
+let S=fresh(),buffs=[],dirty=false;
+function cost(i,n){return Math.ceil(B[i][2]*Math.pow(1.15,n))}
+function mult(s,fr){let m=1+.02*s.chips;U.forEach(u=>{if(s.up[u.id]&&u.glob)m*=1.05});return m}
+function cps(s){let t=0;B.forEach((b,i)=>{let m=1;U.forEach(u=>{if(s.up[u.id]&&u.b===i)m*=2});t+=s.own[i]*b[3]*m});t*=mult(s);buffs.forEach(x=>{if(x.k===\"f\")t*=7});return t}
+function cpc(s){let m=1;U.forEach(u=>{if(s.up[u.id]&&u.click)m*=2});let c=m*(1+cps(s)*(s.up.c_pct?.01:0));buffs.forEach(x=>{if(x.k===\"k\")c*=777});return c*(1+.02*s.chips)}
+let AX=null;function snd(fr,d,ty,v){if(S.mute)return;try{AX=AX||new(window.AudioContext||window.webkitAudioContext)();if(AX.state===\"suspended\")AX.resume();const o=AX.createOscillator(),g=AX.createGain();o.type=ty||\"sine\";o.frequency.value=fr;g.gain.value=Math.max(.0002,(v||.08)*(S.vol==null?1:S.vol));g.gain.exponentialRampToValueAtTime(.0001,AX.currentTime+d);o.connect(g);g.connect(AX.destination);o.start();o.stop(AX.currentTime+d)}catch(e){}}
+function toast(t){const e=$("toast");e.textContent=t;e.style.opacity=1;clearTimeout(toast.h);toast.h=setTimeout(()=>e.style.opacity=0,2600)}
+$("brownie").addEventListener("pointerdown",e=>{e.preventDefault();const g=cpc(S);S.b+=g;S.tot+=g;S.all+=g;S.clicks++;dirty=true;snd(180+Math.random()*60,.1,"triangle",.1);
+ const st=$("stage").getBoundingClientRect(),x=e.clientX-st.left,y=e.clientY-st.top;
+ const p=document.createElement("div");p.className="pop";p.textContent="+"+f(g);p.style.left=(x-14)+"px";p.style.top=(y-20)+"px";$("stage").appendChild(p);setTimeout(()=>p.remove(),1000);
+ for(let i=0;i<6;i++){const c=document.createElement("div");c.className="crumb";c.style.left=x+"px";c.style.top=y+"px";c.style.setProperty("--x",(Math.random()*120-60)+"px");c.style.setProperty("--y",(Math.random()*90+10)+"px");$("stage").appendChild(c);setTimeout(()=>c.remove(),800)}});
+const shop=$("shop");B.forEach((b,i)=>{const r=document.createElement("button");r.className="row";r.innerHTML='<span class="i">'+b[0]+'</span><span class="n"><b>'+b[1]+'</b><small></small><div class="c"></div></span><span class="o"></span>';r.onclick=()=>buy(i);shop.appendChild(r)});
+function buy(i){const c=cost(i,S.own[i]);if(S.b>=c){S.b-=c;S.own[i]++;dirty=true;snd(520,.15,"sine",.1);setTimeout(()=>snd(780,.2,"sine",.08),90)}}
+function buyUp(u){if(S.b>=u.cost&&!S.up[u.id]){S.b-=u.cost;S.up[u.id]=1;dirty=true;snd(660,.25,"square",.05);drawUps()}}
+U.push({id:"c_pct",ic:"🤝",nm:"Gemeinsamer Teig",ds:"Klicks geben +1% deiner Brownies/s",cost:5e4,ok:s=>s.tot>=1e4,click:0});
+let upSig="";
+function drawUps(){const av=U.filter(u=>!S.up[u.id]&&u.ok(S)).sort((a,b)=>a.cost-b.cost).slice(0,150);const sig=av.map(u=>u.id).join();upSig=sig;const c=$("ups");c.innerHTML="";av.forEach(u=>{const e=document.createElement("button");e.className="up";e.textContent=u.ic;e.dataset.id=u.id;e.onclick=()=>buyUp(u);e.onmouseenter=ev=>tip(ev,u);e.onmouseleave=()=>$("tip").style.display="none";e.onfocus=ev=>tip(ev,u);e.ontouchstart=ev=>{tip(ev.touches[0],u);clearTimeout(tip.h);tip.h=setTimeout(()=>$("tip").style.display="none",2500)};c.appendChild(e)});if(!av.length)c.innerHTML='<small style="color:var(--m)">Keine Upgrades verfügbar – kaufe mehr Gebäude!</small>'}
+function tip(e,u){const t=$("tip");t.innerHTML="<b>"+u.nm+"</b><br>"+u.ds+"<br><span style='color:var(--g)'>"+f(u.cost)+" Brownies</span>";t.style.display="block";t.style.left=Math.min(innerWidth-250,Math.max(4,e.clientX-100))+"px";t.style.top=Math.max(4,e.clientY-80)+"px"}
+let gt=rnd();function rnd(){return 45+Math.random()*75}
+function spawnGold(){const g=$("gold");g.style.display="block";g.style.left=(10+Math.random()*(innerWidth-90))+"px";g.style.top=(70+Math.random()*(innerHeight-220))+"px";g.dataset.till=Date.now()+13e3;snd(990,.4,"sine",.1)}
+$("gold").onclick=()=>{const g=$("gold");g.style.display="none";S.gc++;dirty=true;const r=Math.random(),c=cps(S);
+ if(r<.4){buffs.push({k:"f",n:"🔥 Raserei ×7",e:Date.now()+30e3});toast("Raserei! Produktion ×7 für 30 s")}
+ else if(r<.7){const a=Math.min(S.b*.15,c*900)+13;S.b+=a;S.tot+=a;S.all+=a;toast("Glückstreffer! +"+f(a)+" Brownies")}
+ else if(r<.9){buffs.push({k:"k",n:"👆 Klick-Raserei ×777",e:Date.now()+13e3});toast("Klick-Raserei! Klicks ×777 für 13 s")}
+ else{const a=c*60+100;S.b+=a;S.tot+=a;S.all+=a;toast("Brownie-Regen! +"+f(a)+" Brownies")}
+ snd(880,.3,"sine",.1);setTimeout(()=>snd(1320,.4,"sine",.08),120)};
+const chipsTotal=()=>Math.floor(Math.cbrt(S.all/1e9));
+$("asc").onclick=()=>{const g=chipsTotal()-S.chips;if(g<1){toast("Noch keine Chips verdient – backe mehr!");return}
+ if(!confirm("Aufsteigen? Du erhältst "+g+" Prestige-Chips (+"+g*2+"% Produktion). Brownies, Gebäude und Upgrades werden zurückgesetzt."))return;
+ const n=fresh();n.chips=S.chips+g;n.all=S.all;n.asc=S.asc+1;n.gc=S.gc;n.clicks=S.clicks;n.ach=S.ach;n.t0=S.t0;n.mute=S.mute;n.pt=S.pt;n.name=S.name;S=n;buffs=[];drawUps();dirty=true;save(true);toast("Aufgestiegen! +"+g+" Chips")};
+let cloud=null;
+function pack(){S.t=Date.now();return JSON.stringify(S)}
+function unpack(j){const o=JSON.parse(j);if(!o||typeof o.b!=="number")throw 0;return Object.assign(fresh(),o,{own:B.map((_,i)=>+(o.own&&o.own[i])||0)})}
+async function save(m){const j=pack();try{localStorage.setItem(KEY,j)}catch(e){}let w="lokal";
+ if(cloud){try{await cloud.set({json:j,t:S.t});w="Cloud + lokal"}catch(e){}}
+ dirty=false;$("sv").textContent="Gespeichert ("+w+") "+new Date().toLocaleTimeString("de-DE");if(m===true||m===1)toast("Gespeichert ("+w+")")}
+$("save").onclick=()=>save(1);
+$("exp").onclick=async()=>{const j=btoa(unescape(encodeURIComponent(pack())));$("ta").style.display="block";$("ta").value=j;$("ta").select();try{await navigator.clipboard.writeText(j);toast("Export-Code kopiert")}catch(e){toast("Code markieren und kopieren")}};
+$("imp").onclick=()=>{const ta=$("ta");if(ta.style.display===\"none\"||!ta.value.trim()){ta.style.display=\"block\";ta.value=\"\";ta.focus();toast(\"Code einfügen, dann nochmal Import\");return}
+ try{S=unpack(decodeURIComponent(escape(atob(ta.value.trim()))));buffs=[];drawUps();save(1);toast("Import erfolgreich")}catch(e){toast("Ungültiger Code")}};
+$("mute").onclick=()=>{S.mute=S.mute?0:1;$("mute").textContent=S.mute?"🔇":"🔊"};
+$("reset").onclick=()=>{if(confirm("Wirklich ALLES löschen?")){S=fresh();buffs=[];drawUps();save(1)}};
+let last=Date.now(),sec=0;
+function tick(){const n=Date.now(),dt=Math.min((n-last)/1e3,5);last=n;if(!document.hidden)S.pt+=dt;buffs=buffs.filter(x=>x.e>n);const g=cps(S)*dt;S.b+=g;S.tot+=g;S.all+=g;if(g>0)dirty=true;
+ gt-=dt;if(gt<=0&&$("gold").style.display===\"none\"){spawnGold();gt=rnd()}
+ if($("gold").style.display===\"block\"&&n>+$("gold\").dataset.till)$("gold\").style.display=\"none\";
+ sec+=dt;if(sec>=1){sec=0;slow()}render()}
+function render(){$("bank").textContent=f(S.b)+" 🍫";$("cps").textContent="pro Sekunde: "+f(cps(S))+" · pro Klick: "+f(cpc(S));
+ $("buffs").innerHTML=buffs.map(x=>'<span class="buff">'+x.n+" "+Math.ceil((x.e-Date.now())/1e3)+"s</span>").join("");
+ [...shop.children].forEach((r,i)=>{const c=cost(i,S.own[i]);r.querySelector("small").textContent="+"+f(B[i][3])+"/s je Stück";r.querySelector(".c").textContent=f(c)+" 🍫";r.querySelector(".o").textContent=S.own[i];r.classList.toggle("no",S.b<c)});
+ document.querySelectorAll(".up").forEach(e=>{const u=U.find(x=>x.id===e.dataset.id);e.classList.toggle("no",S.b<u.cost)});
+ document.title=f(S.b)+" Brownies – Brownie Clicker"}
+const achEl=$("ach");AC.forEach(a=>{const e=document.createElement("div");e.className="a";e.textContent=a[0];e.title=a[1];achEl.appendChild(e)});
+function slow(){drawBand();const av=U.filter(u=>!S.up[u.id]&&u.ok(S)).sort((a,b)=>a.cost-b.cost).slice(0,150).map(u=>u.id).join();if(av!==upSig)drawUps();
+ let n=0;AC.forEach((a,i)=>{const k="a"+i;if(!S.ach[k]&&a[2](S)){S.ach[k]=1;toast("🏆 Erfolg: "+a[1]);snd(1040,.3,"triangle",.1);dirty=true}if(S.ach[k])n++;achEl.children[i].classList.toggle("on",!!S.ach[k])});$("ac").textContent=n+"/"+AC.length;
+ const g=chipsTotal()-S.chips;$("pre").innerHTML="Prestige-Chips: <b style='color:var(--g)'>"+S.chips+"</b> (+"+S.chips*2+"% Produktion)<br>Beim Aufsteigen verdient: <b style='color:var(--g)'>"+Math.max(g,0)+"</b>";
+ const up=Math.floor((Date.now()-S.t0)/1e3),rows=[["Brownies in Bank",f(S.b)],["Gebacken (dieser Lauf)",f(S.tot)],["Gebacken (gesamt)",f(S.all)],["Klicks",S.clicks.toLocaleString("de-DE")],["Gebäude",S.own.reduce((a,b)=>a+b,0)],["Upgrades",Object.keys(S.up).length+"/"+U.length],["Goldene Brownies",S.gc],["Aufstiege",S.asc],["Spielzeit",hm(S.pt)]];
+ $("stats").innerHTML=rows.map(r=>"<div><span>"+r[0]+"</span><span>"+r[1]+"</span></div>").join("")}
+setInterval(tick,100);setInterval(()=>{if(dirty)save()},10000);
+addEventListener("pagehide",()=>{try{localStorage.setItem(KEY,pack())}catch(e){}});
+document.addEventListener("visibilitychange",()=>{if(document.hidden){try{localStorage.setItem(KEY,pack())}catch(e){}if(cloud)save()}else last=Date.now()});
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));document.querySelectorAll(".col").forEach(c=>c.classList.toggle("on",c.dataset.t===b.dataset.g))});
+const NW=["Eine Bäckerin schwört: Brownies sind gesünder als Salat.","Neuer Rekord: Ofen backt 3 Bleche gleichzeitig.","Experten warnen: Schoko-Fabrik riecht zu gut.","Kakaobohnen-Preise steigen, Brownie-Preise bleiben köstlich.","Walnüsse fordern Mitspracherecht im Teig.","Alchemisten behaupten, Gold aus Brownies gewinnen zu können.","Nachrichten: Alle lieben Brownies. Mehr dazu später."];
+let ni=0;function news(){$("news").textContent="📰 "+NW[ni++%NW.length]}news();setInterval(news,9000);
+const hm=t=>Math.floor(t/3600)+"h "+Math.floor(t%3600/60)+"m";
+const band=$("band");B.forEach((b,i)=>{const r=document.createElement("div");r.className="brow";r.style.display="none";band.appendChild(r)});
+function drawBand(){[...band.children].forEach((r,i)=>{const n=S.own[i];r.style.display=n?"flex":"none";if(!n)return;const k=Math.min(n,28);if(r.dataset.k!=k){r.dataset.k=k;r.innerHTML=(('<span class="e">'+B[i][0]+'</span>').repeat(k))+"<b></b>"}r.lastChild.textContent="×"+n})}
+let DB=null,UID=null,lbk="chips";
+function post(){if(!DB||!UID)return;if(!S.name)S.name="Bäcker"+UID.slice(0,4);DB.doc("board/"+UID).set({name:S.name,chips:S.chips,pt:Math.floor(S.pt),ups:Object.keys(S.up).length,t:Date.now()}).catch(()=>{})}
+async function lbShow(){const L=$("lbl");L.textContent="Lade …";const me={name:S.name||"Du",chips:S.chips,pt:S.pt,ups:Object.keys(S.up).length};const fm=v=>lbk===\"pt\"?hm(v):v;let rows=[];
+ if(DB){try{post();const q=await DB.collection("board").orderBy(lbk,"desc").limit(20).get();rows=q.docs.map(d=>Object.assign({id:d.id},d.data()))}catch(e){L.textContent="Ranglisten konnten nicht geladen werden.";return}}
+ else rows=[Object.assign({id:"me"},me)];
+ L.innerHTML=(DB?\"\":\"<div style='color:var(--m);font-size:12px;margin-bottom:6px'>Online-Ranglisten gibt es nur in der claude.ai-Version. Hier siehst du nur dich.</div>\")+rows.map((r,i)=>'<div class="lr'+(r.id===UID||r.id==="me"?" me":"")+'"><span>'+(i+1)+'.</span><span>'+String(r.name||"?").replace(/[<>&]/g,"")+'</span><span>'+fm(r[lbk]||0)+'</span></div>').join("")||"Noch keine Einträge."}
+$("lbb").onclick=()=>{$("lb").style.display="flex";if(!S.name&&DB){S.name=(prompt("Dein Name für die Rangliste?","")||"").slice(0,16).trim()||"Bäcker"+UID.slice(0,4)}lbShow()};
+$("lbx").onclick=()=>$("lb").style.display="none";
+$("lbn").onclick=()=>{const n=(prompt("Neuer Name:",S.name||"")||"").slice(0,16).trim();if(n){S.name=n;dirty=true;lbShow()}};
+document.querySelectorAll("#lbt .btn").forEach(b=>b.onclick=()=>{lbk=b.dataset.k;document.querySelectorAll("#lbt .btn").forEach(x=>x.className="btn "+(x===b?"on":"s"));lbShow()});
+setInterval(()=>{if(DB)post()},60000);
+const op=$("op");function openOp(){op.style.display="flex";$("vol").value=S.vol==null?100:Math.round(S.vol*100);$("mus").textContent=S.mus?"🎵 Musik: an":"🎵 Musik: aus"}
+$("opb").onclick=openOp;$("opx").onclick=()=>op.style.display="none";document.querySelector("#menu span").onclick=openOp;document.querySelector("#menu span").style.cursor="pointer";
+$("vol").oninput=e=>{S.vol=e.target.value/100;dirty=true;snd(440,.12,"sine",.1)};
+const PN=[262,294,330,392,440,523,587];function note(){if(!S.mus||S.mute||document.hidden)return;snd(PN[Math.floor(Math.random()*PN.length)]/(Math.random()<.3?2:1),1.6,"sine",.03)}
+$("mus").onclick=()=>{S.mus=S.mus?0:1;$("mus").textContent=S.mus?"🎵 Musik: an":"🎵 Musik: aus";dirty=true;if(S.mus)note()};setInterval(note,900);
+function offline(){const el=(Date.now()-S.t)/1e3;if(el>60){const g=cps(S)*Math.min(el,7*86400)*.5;if(g>0){S.b+=g;S.tot+=g;S.all+=g;toast("Willkommen zurück! Offline gebacken: "+f(g)+" Brownies")}}}
+try{const j=localStorage.getItem(KEY);if(j)S=unpack(j)}catch(e){}
+offline();$("mute").textContent=S.mute?"🔇":"🔊";drawUps();slow();render();
+</script></body></html>
